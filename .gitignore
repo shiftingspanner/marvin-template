@@ -1,0 +1,36 @@
+# Environment files
+.env
+*.env
+
+# Credentials (if using integrations)
+credentials_*.json
+client_secret_*.json
+token_*.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+*.egg-info/
+
+# Node (if using JS integrations)
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Database (if using local DB)
+*.db
+*.sqlite
+
+# Keep these tracked
+!.gitkeep
