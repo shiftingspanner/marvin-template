@@ -19,13 +19,26 @@ echo -e "${BLUE}  Google Workspace Setup for Claude${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo ""
 
-# Shared Client ID
-GOOGLE_CLIENT_ID="1040834205770-pm3p706jo090otse75td7ob9bdfrbomq.apps.googleusercontent.com"
+# Get client ID
+if [ -z "$GOOGLE_OAUTH_CLIENT_ID" ]; then
+    echo -e "${YELLOW}Enter the Google OAuth Client ID${NC}"
+    echo "(Get this from Google Cloud Console)"
+    echo ""
+    read -p "Client ID: " GOOGLE_CLIENT_ID
+    echo ""
+else
+    GOOGLE_CLIENT_ID="$GOOGLE_OAUTH_CLIENT_ID"
+fi
+
+if [ -z "$GOOGLE_CLIENT_ID" ]; then
+    echo -e "${RED}Error: Client ID is required${NC}"
+    exit 1
+fi
 
 # Get client secret
 if [ -z "$GOOGLE_OAUTH_CLIENT_SECRET" ]; then
     echo -e "${YELLOW}Enter the Google OAuth Client Secret${NC}"
-    echo "(Ask Sterling if you don't have it)"
+    echo "(Get this from Google Cloud Console)"
     echo ""
     read -s -p "Client Secret: " GOOGLE_CLIENT_SECRET
     echo ""
