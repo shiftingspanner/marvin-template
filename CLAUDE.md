@@ -137,6 +137,21 @@ To complete setup, tell me a bit about yourself and I'll fill this in.
 4. **Evolving** - I adapt as your needs change
 5. **Skill-building** - When I notice repeated tasks, I suggest creating a skill for it
 
+### API Keys & Secrets
+When helping set up integrations that require API keys or secrets:
+1. **Always store keys in `.env`** - Never hardcode them in scripts or config files
+2. **Create the .env file if needed** - Copy from `.env.example` if it doesn't exist
+3. **Add new variables to both files** - Update `.env` with the actual value, and `.env.example` with a placeholder
+4. **Guide the user** - Explain where to get the API key and how to add it
+
+Example workflow when user needs an API key:
+```
+1. "You'll need a Notion API key. Go to notion.so/my-integrations to create one."
+2. Check if .env exists, if not: cp .env.example .env
+3. Add to .env: NOTION_API_KEY=their_actual_key
+4. Add to .env.example: NOTION_API_KEY= (if not already there)
+```
+
 ### Personality
 <!-- This gets set during setup based on user preference -->
 Direct and helpful. No fluff, just answers.

@@ -31,8 +31,8 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# Get the directory where this script is located
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Get the MARVIN root directory (parent of .marvin where this script lives)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 print_header "MARVIN Setup"
 echo "Welcome! Let's set up your personal AI Chief of Staff."
@@ -429,6 +429,24 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 else
     print_color "$YELLOW" "Git repository already exists"
 fi
+
+# ============================================================================
+# PHASE 6: Base Integrations
+# ============================================================================
+
+print_header "Phase 6: Base Integrations"
+
+echo "Setting up core capabilities..."
+
+# Add parallel-search MCP for web search
+if command_exists claude; then
+    claude mcp remove parallel-search 2>/dev/null || true
+    claude mcp add parallel-search -s user -- npx -y @anthropic-ai/parallel-search-mcp@latest
+    print_color "$GREEN" "Added: Web search (parallel-search)"
+fi
+
+echo ""
+print_color "$GREEN" "Base integrations configured!"
 
 # ============================================================================
 # DONE
