@@ -31,8 +31,11 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# Get the MARVIN root directory (parent of .marvin where this script lives)
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# Get the template directory (parent of .marvin where this script lives)
+TEMPLATE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Default workspace location
+DEFAULT_WORKSPACE="$HOME/marvin"
 
 print_header "MARVIN Setup"
 echo "Welcome! Let's set up your personal AI Chief of Staff."
@@ -91,10 +94,41 @@ else
 fi
 
 # ============================================================================
-# PHASE 2: Gather User Info
+# PHASE 2: Workspace Location
 # ============================================================================
 
-print_header "Phase 2: About You"
+print_header "Phase 2: Workspace Location"
+
+echo "Where would you like your MARVIN workspace?"
+echo "This is where your data, goals, and session logs will live."
+echo ""
+echo "Default: $DEFAULT_WORKSPACE"
+read -p "Press Enter for default, or type a path: " WORKSPACE_INPUT
+
+if [[ -z "$WORKSPACE_INPUT" ]]; then
+    WORKSPACE_DIR="$DEFAULT_WORKSPACE"
+else
+    # Expand ~ if present
+    WORKSPACE_DIR="${WORKSPACE_INPUT/#\~/$HOME}"
+fi
+
+# Check if workspace already exists
+if [[ -d "$WORKSPACE_DIR" ]]; then
+    print_color "$YELLOW" "Warning: $WORKSPACE_DIR already exists."
+    read -p "Continue and merge with existing? [y/N]: " CONTINUE_MERGE
+    if [[ ! "$CONTINUE_MERGE" =~ ^[Yy]$ ]]; then
+        print_color "$RED" "Setup cancelled."
+        exit 1
+    fi
+fi
+
+print_color "$GREEN" "Workspace: $WORKSPACE_DIR"
+
+# ============================================================================
+# PHASE 3: Gather User Info
+# ============================================================================
+
+print_header "Phase 3: About You"
 
 # Name
 echo "What's your name?"
@@ -179,10 +213,37 @@ case $IDE_CHOICE in
 esac
 
 # ============================================================================
-# PHASE 3: Generate Files
+# PHASE 4: Create Workspace
 # ============================================================================
 
-print_header "Phase 3: Generating Your MARVIN"
+print_header "Phase 4: Creating Your Workspace"
+
+# Create workspace directory
+mkdir -p "$WORKSPACE_DIR"
+
+# Copy user-facing files from template
+echo "Copying files to workspace..."
+cp -r "$TEMPLATE_DIR/.claude" "$WORKSPACE_DIR/"
+cp -r "$TEMPLATE_DIR/skills" "$WORKSPACE_DIR/"
+cp -r "$TEMPLATE_DIR/state" "$WORKSPACE_DIR/"
+cp "$TEMPLATE_DIR/CLAUDE.md" "$WORKSPACE_DIR/"
+[[ -f "$TEMPLATE_DIR/.env.example" ]] && cp "$TEMPLATE_DIR/.env.example" "$WORKSPACE_DIR/"
+
+# Create empty directories for user data
+mkdir -p "$WORKSPACE_DIR/sessions"
+mkdir -p "$WORKSPACE_DIR/reports"
+mkdir -p "$WORKSPACE_DIR/content"
+
+# Create .marvin-source file pointing to template
+echo "$TEMPLATE_DIR" > "$WORKSPACE_DIR/.marvin-source"
+
+print_color "$GREEN" "Workspace created at: $WORKSPACE_DIR"
+
+# ============================================================================
+# PHASE 5: Generate Files
+# ============================================================================
+
+print_header "Phase 5: Personalizing Your MARVIN"
 
 # Build employer line if provided
 EMPLOYER_LINE=""
@@ -192,8 +253,8 @@ else
     EMPLOYER_LINE="${USER_ROLE}"
 fi
 
-# Generate CLAUDE.md
-cat > "$SCRIPT_DIR/CLAUDE.md" << CLAUDE_EOF
+# Generate CLAUDE.md in workspace
+cat > "$WORKSPACE_DIR/CLAUDE.md" << CLAUDE_EOF
 # MARVIN - AI Chief of Staff
 
 **MARVIN** = Manages Appointments, Reads Various Important Notifications
@@ -234,7 +295,7 @@ ${PERSONALITY_DESC}
 
 ### Directory Structure
 \`\`\`
-$(basename "$SCRIPT_DIR")/
+marvin/
 ├── CLAUDE.md              # This file (read on startup)
 ├── skills/                # MARVIN's capabilities
 │   ├── marvin/            # Session start
@@ -294,7 +355,7 @@ CLAUDE_EOF
 print_color "$GREEN" "Created: CLAUDE.md"
 
 # Generate state/goals.md
-cat > "$SCRIPT_DIR/state/goals.md" << GOALS_EOF
+cat > "$WORKSPACE_DIR/state/goals.md" << GOALS_EOF
 # Goals
 
 Last updated: $(date +%Y-%m-%d)
@@ -317,7 +378,7 @@ GOALS_EOF
 print_color "$GREEN" "Created: state/goals.md"
 
 # Generate state/current.md
-cat > "$SCRIPT_DIR/state/current.md" << CURRENT_EOF
+cat > "$WORKSPACE_DIR/state/current.md" << CURRENT_EOF
 # Current State
 
 Last updated: $(date +%Y-%m-%d)
@@ -343,17 +404,17 @@ CURRENT_EOF
 print_color "$GREEN" "Created: state/current.md"
 
 # Create .gitkeep files for empty directories
-mkdir -p "$SCRIPT_DIR/sessions" "$SCRIPT_DIR/content"
-touch "$SCRIPT_DIR/sessions/.gitkeep"
-touch "$SCRIPT_DIR/content/.gitkeep"
+mkdir -p "$WORKSPACE_DIR/sessions" "$WORKSPACE_DIR/content"
+touch "$WORKSPACE_DIR/sessions/.gitkeep"
+touch "$WORKSPACE_DIR/content/.gitkeep"
 
 print_color "$GREEN" "Created: sessions/ and content/ directories"
 
 # ============================================================================
-# PHASE 4: Shell Alias
+# PHASE 6: Shell Alias
 # ============================================================================
 
-print_header "Phase 4: Shell Alias"
+print_header "Phase 6: Shell Alias"
 
 # Determine shell config file
 if [[ "$SHELL" == *"zsh"* ]]; then
@@ -384,7 +445,7 @@ marvin() {
     echo -e '\e[0;36m▌▌▙▖█▌▙▌▄▌  ▚▘█▌▌ ▌▙▌▙▌▄▌  ▟▖▌▌▌▙▌▙▌▌ ▐▖█▌▌▌▐▖  ▌▝▌▙▌▐▖▌▐ ▌▙▖█▌▐▖▌▙▌▌▌▄▌\e[0m'
     echo -e '\e[0;36m                                ▌                                       \e[0m'
     echo ''
-    cd \"$SCRIPT_DIR\" && claude
+    cd \"$WORKSPACE_DIR\" && claude
 }
 "
 
@@ -401,7 +462,7 @@ if [[ -n "$IDE_CMD" ]]; then
     MCODE_FUNCTION="
 # MARVIN - Open in IDE
 mcode() {
-    $IDE_CMD \"$SCRIPT_DIR\"
+    $IDE_CMD \"$WORKSPACE_DIR\"
 }
 "
     if grep -q "^mcode()" "$SHELL_RC" 2>/dev/null; then
@@ -413,13 +474,13 @@ mcode() {
 fi
 
 # ============================================================================
-# PHASE 5: Initialize Git
+# PHASE 7: Initialize Git
 # ============================================================================
 
-print_header "Phase 5: Git Setup"
+print_header "Phase 7: Git Setup"
 
-if [[ ! -d "$SCRIPT_DIR/.git" ]]; then
-    cd "$SCRIPT_DIR"
+if [[ ! -d "$WORKSPACE_DIR/.git" ]]; then
+    cd "$WORKSPACE_DIR"
     git init
     git add .
     git commit -m "Initial MARVIN setup
@@ -431,10 +492,10 @@ else
 fi
 
 # ============================================================================
-# PHASE 6: Base Integrations
+# PHASE 8: Base Integrations
 # ============================================================================
 
-print_header "Phase 6: Base Integrations"
+print_header "Phase 8: Base Integrations"
 
 echo "Setting up core capabilities..."
 
@@ -456,13 +517,19 @@ print_header "Setup Complete!"
 
 echo "Your MARVIN is ready!"
 echo ""
+print_color "$CYAN" "Workspace: $WORKSPACE_DIR"
+print_color "$CYAN" "Template:  $TEMPLATE_DIR"
+echo ""
 echo "Available commands (open a new terminal first, or run: source $SHELL_RC)"
 echo ""
-print_color "$CYAN" "  marvin    - Start MARVIN (Claude Code in your marvin directory)"
+print_color "$CYAN" "  marvin    - Start MARVIN (Claude Code in your workspace)"
 if [[ -n "$IDE_CMD" ]]; then
     print_color "$CYAN" "  mcode     - Open MARVIN in $IDE_CMD"
 fi
 echo ""
 echo "Once Claude Code starts, type /marvin to begin your first session."
+echo ""
+print_color "$YELLOW" "Important: Keep the template folder ($TEMPLATE_DIR)!"
+print_color "$YELLOW" "That's where you'll get updates. Run /sync to pull new features."
 echo ""
 print_color "$GREEN" "Enjoy your new AI Chief of Staff!"

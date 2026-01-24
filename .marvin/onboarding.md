@@ -57,11 +57,81 @@ Ask these questions one at a time, waiting for answers:
    - Casual (friendly, relaxed, conversational)
    - Sarcastic (dry wit, like the original Marvin from Hitchhiker's Guide)
 
-### Step 3: Create Their Profile
+### Step 3: Create Your Workspace
 
-Once you have their info, update these files:
+This is where we set up the user's personal MARVIN workspace, separate from the template.
 
-**Update `state/goals.md`** with their goals organized by type:
+Explain:
+> "Now I'm going to create your personal MARVIN workspace. This is where all your data, goals, and session logs will live. The template you downloaded will stay separate so you can get updates later."
+
+Ask: "Where would you like me to put your MARVIN folder? The default is your home folder (`~/marvin`). Press Enter to use the default, or tell me a different location."
+
+**Create the workspace:**
+
+Run these commands (using their chosen path, defaulting to ~/marvin):
+
+```bash
+# Create the workspace directory
+mkdir -p ~/marvin
+
+# Copy the user-facing files from the template
+cp -r .claude ~/marvin/
+cp -r skills ~/marvin/
+cp -r state ~/marvin/
+cp CLAUDE.md ~/marvin/
+cp .env.example ~/marvin/
+
+# Create empty directories for user data
+mkdir -p ~/marvin/sessions
+mkdir -p ~/marvin/reports
+mkdir -p ~/marvin/content
+
+# Create .marvin-source file pointing to this template
+echo "$(pwd)" > ~/marvin/.marvin-source
+```
+
+**What gets copied:**
+- `.claude/` - The slash commands
+- `skills/` - MARVIN's capabilities (user can add their own)
+- `state/` - Current priorities and goals (will be personalized)
+- `CLAUDE.md` - Main context file (will be personalized)
+- `.env.example` - Template for API keys
+
+**What stays in the template:**
+- `.marvin/` - Setup scripts and integrations (run from here when needed)
+- `sessions/`, `reports/`, `content/` - Created fresh in workspace
+
+Tell the user:
+> "I've created your MARVIN workspace at {path}. This is your personal space - all your data stays here. The template folder stays separate so you can get updates when new features are added."
+
+### Step 4: Set Up Git (Optional)
+
+Ask: "Would you like to track your MARVIN workspace with git? This lets you back up your data and optionally sync it to GitHub."
+
+If yes:
+```bash
+cd ~/marvin
+git init
+git add .
+git commit -m "Initial MARVIN setup"
+```
+
+Then ask: "Do you want to connect this to a GitHub repository? If so, create a **private** repository on GitHub and paste the URL here. Or press Enter to skip - you can always add this later."
+
+If they provide a URL:
+```bash
+git remote add origin {their-url}
+git push -u origin main
+```
+
+If they skip or say no:
+> "No problem! Your workspace is set up locally. You can always add GitHub later if you want to back things up."
+
+### Step 5: Create Their Profile
+
+Now update the files **in the new workspace** with their info:
+
+**Update `~/marvin/state/goals.md`** with their goals organized by type:
 ```markdown
 # Goals
 
@@ -88,7 +158,7 @@ Last updated: {TODAY'S DATE}
 ...
 ```
 
-**Update `state/current.md`**:
+**Update `~/marvin/state/current.md`**:
 ```markdown
 # Current State
 
@@ -108,7 +178,7 @@ Last updated: {TODAY'S DATE}
 - Just set up MARVIN!
 ```
 
-**Update `CLAUDE.md`** - Replace the "User Profile" section with their actual info:
+**Update `~/marvin/CLAUDE.md`** - Replace the "User Profile" section with their actual info:
 ```markdown
 ## User Profile
 
@@ -123,7 +193,7 @@ Last updated: {TODAY'S DATE}
 **Communication Style:** {Their preference - Professional/Casual/Sarcastic}
 ```
 
-### Step 4: Quick Launch Shortcut (Optional)
+### Step 6: Quick Launch Shortcut (Optional)
 
 Ask: "Would you like to be able to start me by just typing `marvin` anywhere in the terminal? It's a quick shortcut that makes it easier to open me up."
 
@@ -134,24 +204,26 @@ If yes:
 >
 > "It'll ask you a couple quick questions, then you're all set. After that, whenever you want to talk to me, just open a new window and type `marvin`."
 
-If they seem confused or hesitant:
-> "No worries, we can skip this for now! You can always set it up later. For now, you'll just open this folder and start Claude Code like you did today."
+**Important:** The setup.sh script needs to know about the new workspace location. It should update the shell alias to point to `~/marvin` (or wherever they chose), not the template directory.
 
-### Step 5: Connect Your Tools (Optional)
+If they seem confused or hesitant:
+> "No worries, we can skip this for now! You can always set it up later. For now, you'll navigate to your MARVIN folder and start Claude Code from there."
+
+### Step 7: Connect Your Tools (Optional)
 
 Ask: "Do you use Google Calendar, Gmail, Jira, or Confluence? I can connect to those so I can check your calendar, help with emails, or look up tickets for you."
 
 If yes, ask which ones they use and guide them:
 
 **For Google (Calendar, Gmail, Drive):**
-> "Let's connect Google. Run this command:"
+> "Let's connect Google. Run this command from the template folder:"
 >
 > `./.marvin/integrations/google-workspace/setup.sh`
 >
 > "It'll open a browser window where you log into Google and give me permission to help you."
 
 **For Jira/Confluence:**
-> "Let's connect Atlassian. Run this command:"
+> "Let's connect Atlassian. Run this command from the template folder:"
 >
 > `./.marvin/integrations/atlassian/setup.sh`
 >
@@ -160,7 +232,9 @@ If yes, ask which ones they use and guide them:
 If they say no or want to skip:
 > "No problem! We can always add these later. Just ask me anytime - 'Hey MARVIN, help me connect to Google Calendar' - and I'll walk you through it."
 
-### Step 6: Explain the Daily Workflow
+**Note:** Integrations are run from the template directory, not the user's workspace. The MCP servers are configured globally for Claude Code.
+
+### Step 8: Explain the Daily Workflow
 
 Explain how a typical day with MARVIN works:
 
@@ -188,7 +262,7 @@ Then show the full command list:
 | `/code` | Open this folder in your IDE |
 | `/help` | See all commands and integrations |
 
-### Step 7: Explain How I Work
+### Step 9: Explain How I Work
 
 This is important - set expectations about MARVIN's personality:
 
@@ -200,10 +274,13 @@ This is important - set expectations about MARVIN's personality:
 >
 > Think of me as a thought partner, not a yes-man. If you want me to just execute without questioning, just say so - but by default, I'll help you think things through."
 
-### Step 8: First Session
+### Step 10: First Session
 
-Once they understand everything, say:
-> "Ready to try it out? Type `/marvin` and I'll give you your first briefing!"
+Tell them about the template:
+> "One last thing: **Keep the template folder you downloaded.** That's where I get updates from. When new features or integrations are added, you can run `/sync` to pull them into your workspace. Don't worry - your personal data is safe in your MARVIN folder and won't be overwritten."
+
+Then:
+> "Ready to try it out? Navigate to your MARVIN folder (`cd ~/marvin`) and start Claude Code. Then type `/marvin` and I'll give you your first briefing!"
 
 ---
 
@@ -213,3 +290,13 @@ Once setup is complete, MARVIN should:
 1. Never show this onboarding flow again
 2. Use the normal `/marvin` briefing flow
 3. Reference CLAUDE.md for the user's profile and preferences
+4. Run from the user's workspace directory (e.g., ~/marvin), not the template
+
+## Getting Updates (/sync)
+
+When the user runs `/sync`, MARVIN should:
+1. Read `.marvin-source` to find the template directory
+2. Check for new/updated files in the template's `.claude/commands/` and `skills/`
+3. Copy new files to the user's workspace
+4. For conflicts, the user's version is the source of truth (don't overwrite)
+5. Report what was updated

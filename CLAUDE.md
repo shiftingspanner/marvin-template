@@ -78,6 +78,7 @@ When helping set up integrations that require API keys:
 | `/commit` | Review and commit git changes |
 | `/code` | Open MARVIN in your IDE |
 | `/help` | Show commands and available integrations |
+| `/sync` | Get updates from the MARVIN template |
 
 ---
 
@@ -106,6 +107,7 @@ When helping set up integrations that require API keys:
 ```
 marvin/
 ├── CLAUDE.md              # This file
+├── .marvin-source         # Points to template for updates
 ├── .env                   # Your secrets (not in git)
 ├── state/                 # Your current state
 │   ├── current.md         # Priorities and open threads
@@ -114,19 +116,23 @@ marvin/
 ├── reports/               # Weekly reports (from /report)
 ├── content/               # Your content and notes
 ├── skills/                # Capabilities (add your own!)
-└── .marvin/               # Setup machinery (hidden)
+└── .claude/               # Slash commands
 ```
 
 Your workspace is yours. Add folders, files, projects - whatever you need.
+
+**Note:** The setup scripts and integrations live in the template folder (the one you originally downloaded). Run `/sync` to pull updates from there.
 
 ---
 
 ## Integrations
 
-Type `/help` to see available integrations, or browse `.marvin/integrations/`.
+Type `/help` to see available integrations.
 
-| Integration | Setup Command | What It Does |
-|-------------|---------------|--------------|
+**To add integrations:** Navigate to your template folder (check `.marvin-source` for the path) and run the setup scripts from there:
+
+| Integration | Setup Command (from template folder) | What It Does |
+|-------------|--------------------------------------|--------------|
 | Google Workspace | `./.marvin/integrations/google-workspace/setup.sh` | Gmail, Calendar, Drive |
 | Atlassian | `./.marvin/integrations/atlassian/setup.sh` | Jira, Confluence |
 

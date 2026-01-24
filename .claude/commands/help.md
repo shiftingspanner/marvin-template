@@ -24,6 +24,7 @@ Display this reference:
 | /commit   | Review and commit git changes       |
 | /code     | Open MARVIN in your IDE             |
 | /help     | Show this help guide                |
+| /sync     | Get updates from MARVIN template    |
 ```
 
 ### 2. Show Current Integrations
