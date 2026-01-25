@@ -53,6 +53,19 @@ claude mcp add ms365 -s user -- npx -y @softeria/ms-365-mcp-server --org-mode
 - Clear cached tokens by removing `~/.ms365-mcp/` directory
 - Re-authenticate on next request
 
+**"Need admin approval" error (Work/School accounts):**
+
+This MCP requests broad permissions including Teams, SharePoint, and directory access. Many organizations require admin consent for these scopes.
+
+Your options:
+1. **Get admin consent** - Ask your IT admin to approve the app, or grant yourself admin rights if you're an admin
+2. **Use a personal Microsoft account** - Personal accounts (outlook.com, hotmail.com) don't require admin consent
+3. **Wait for a minimal-scopes version** - A fork with reduced permissions for just Mail, Calendar, and OneDrive is being considered
+
+Scopes that typically require admin consent:
+- `User.Read.All`, `Sites.Read.All`, `Files.Read.All`
+- All Teams/Chat scopes (`Team.ReadBasic.All`, `Channel.ReadBasic.All`, etc.)
+
 ## More Info
 
 - MCP Package: [@softeria/ms-365-mcp-server](https://www.npmjs.com/package/@softeria/ms-365-mcp-server)
