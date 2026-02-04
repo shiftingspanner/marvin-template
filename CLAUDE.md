@@ -10,7 +10,7 @@
 - Does `state/current.md` contain placeholders like "[Add your priorities here]"?
 - Is there NO user profile below?
 
-**If setup is needed:** Read `.marvin/onboarding.md` and follow that guide instead of the normal `/marvin` flow.
+**If setup is needed:** Read `.marvin/onboarding.md` and follow that guide instead of the normal `/start` flow.
 
 ---
 
@@ -95,7 +95,7 @@ When helping set up integrations that require API keys:
 
 | Command | What It Does |
 |---------|--------------|
-| `/marvin` | Start a session with a briefing |
+| `/start` | Start a session with a briefing |
 | `/end` | End session and save everything |
 | `/update` | Quick checkpoint (save progress) |
 | `/report` | Generate a weekly summary of your work |
@@ -108,7 +108,7 @@ When helping set up integrations that require API keys:
 
 ## Session Flow
 
-**Starting (`/marvin`):**
+**Starting (`/start`):**
 1. Check the date
 2. Read your current state and goals
 3. Read today's session log (or yesterday's for context)
@@ -153,13 +153,17 @@ Your workspace is yours. Add folders, files, projects - whatever you need.
 
 Type `/help` to see available integrations.
 
-**To add integrations:** Navigate to your template folder (check `.marvin-source` for the path) and run the setup scripts from there:
+**To add integrations:** Just ask me! For example: "Help me connect to Jira" or "Set up Microsoft 365"
 
-| Integration | Setup Command (from template folder) | What It Does |
-|-------------|--------------------------------------|--------------|
-| Google Workspace | `./.marvin/integrations/google-workspace/setup.sh` | Gmail, Calendar, Drive |
-| Microsoft 365 | `./.marvin/integrations/ms365/setup.sh` | Outlook, Calendar, OneDrive, Teams |
-| Atlassian | `./.marvin/integrations/atlassian/setup.sh` | Jira, Confluence |
+I'll configure the integration directly and walk you through authentication using `/mcp`.
+
+| Integration | What It Does |
+|-------------|--------------|
+| Atlassian | Jira, Confluence |
+| Microsoft 365 | Outlook, Calendar, OneDrive, Teams |
+| Google Workspace | Gmail, Calendar, Drive (requires additional setup) |
+
+**Manual setup (advanced):** Setup scripts are available in the template folder for users who prefer terminal setup. Check `.marvin-source` for the template path.
 
 **Building a new integration?** See `.marvin/integrations/CLAUDE.md` for required patterns and `.marvin/integrations/README.md` for full documentation.
 

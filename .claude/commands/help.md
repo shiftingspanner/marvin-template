@@ -17,7 +17,7 @@ Display this reference:
 
 | Command   | What It Does                        |
 |-----------|-------------------------------------|
-| /marvin   | Start a session with a briefing     |
+| /start   | Start a session with a briefing     |
 | /end      | End session and save everything     |
 | /update   | Quick checkpoint (save progress)    |
 | /report   | Generate a weekly summary of work   |
@@ -53,22 +53,23 @@ If no integrations are configured, say:
 ```
 ## Your Integrations
 
-No integrations configured yet. I can help you set one up, or you can run the setup scripts in `.marvin/integrations/`.
+No integrations configured yet. Just say "Help me connect to Jira" or "Set up Microsoft 365" and I'll walk you through it!
 ```
 
 ### 3. Show Available Integrations
 
-Read `.marvin/integrations/README.md` to see the full list of available integrations, then display:
+Display what integrations can be added:
 
 ```
 ## Available Integrations
 
-These can be added anytime. Browse `.marvin/integrations/` for details.
+Just ask me to set one up! For example: "Help me connect to Jira"
 
-| Integration      | Setup Command                                   | What It Does                 |
-|------------------|-------------------------------------------------|------------------------------|
-| Google Workspace | ./.marvin/integrations/google-workspace/setup.sh | Gmail, Calendar, Drive       |
-| Atlassian        | ./.marvin/integrations/atlassian/setup.sh        | Jira, Confluence             |
+| Integration      | What It Does                              |
+|------------------|-------------------------------------------|
+| Atlassian        | Jira tickets, Confluence pages            |
+| Microsoft 365    | Outlook email, Calendar, OneDrive, Teams  |
+| Google Workspace | Gmail, Calendar, Drive (advanced setup)   |
 
 Want something else? Check `.marvin/integrations/REQUESTS.md` to see what's planned or request a new one!
 ```

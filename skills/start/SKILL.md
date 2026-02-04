@@ -1,13 +1,13 @@
 ---
-name: marvin
+name: start
 description: |
-  Start MARVIN session with briefing. Use when user types /marvin or starts a new session. Loads context, reviews state, gives daily briefing.
+  Start MARVIN session with briefing. Use when user types /start or starts a new session. Loads context, reviews state, gives daily briefing.
 license: MIT
 compatibility: marvin
 metadata:
   marvin-category: session
   user-invocable: true
-  slash-command: /marvin
+  slash-command: /start
   model: default
   proactive: false
 ---
@@ -18,7 +18,7 @@ Start MARVIN session with full context loading and daily briefing.
 
 ## When to Use
 
-- When user types `/marvin`
+- When user types `/start`
 - At the start of any Claude Code session in the MARVIN directory
 - When resuming work after a break
 

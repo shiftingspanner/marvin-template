@@ -4,14 +4,154 @@ This guide walks new users through setting up MARVIN. Read by MARVIN when setup 
 
 ---
 
-## How to Detect if Setup is Needed
+## Important: Integration Setup
+
+**DO NOT run setup scripts via Bash during onboarding.** The scripts use interactive `read` prompts that don't work well from within Claude Code.
+
+Instead, for Atlassian and MS365:
+1. Run `claude mcp add` commands directly (see Step 7)
+2. User must restart Claude Code for new MCPs to appear
+3. After restart, user types `/mcp` to authenticate
+4. MARVIN detects pending auth state and guides them through it
+
+---
+
+## How to Detect Onboarding State
+
+**Check in this order:**
+
+### 1. Check for Pending Integration Auth (restart needed)
+
+Look for the file `.onboarding-pending-auth` in the workspace root.
+
+If this file exists:
+- Read it to see which integrations need authentication
+- Skip to **"Resuming After Restart"** section below
+- Guide user through `/mcp` authentication for each integration
+- Delete the file when done
+- Complete onboarding with Steps 8-10
+
+### 2. Check for Fresh Setup Needed
 
 Check these signs:
 - Does `state/current.md` contain "{{" placeholders or "[Add your priorities here]"?
 - Does `state/goals.md` contain placeholder text?
 - Is there NO personalized user information in `CLAUDE.md`?
 
-If any of these are true, run this onboarding flow instead of the normal `/marvin` briefing.
+If any of these are true, run the full onboarding flow starting at Step 1.
+
+---
+
+## Resuming After Restart (Integration Auth)
+
+If `.onboarding-pending-auth` exists, the user just restarted to authenticate integrations.
+
+**First, read the file to see which integrations need auth:**
+```bash
+cat .onboarding-pending-auth
+```
+
+**Greet them warmly:**
+> "Welcome back, {name}! You're almost done - just need to connect your accounts now. This is the last step, I promise."
+
+---
+
+### For Atlassian and MS365 (need `/mcp` auth)
+
+> "Type `/mcp` right here. You should see your integrations listed."
+
+**Wait for them to type `/mcp`**, then guide them through each:
+
+> "Great! Now:
+> 1. Select '{integration_name}' from the list
+> 2. Choose 'Authenticate'
+> 3. A browser window will open - log in with your {service} account
+> 4. Once you see 'success' in the browser, come back here
+>
+> Let me know when you're done!"
+
+---
+
+### For Google Workspace (authenticates on first use)
+
+Google authenticates automatically when you first use it - no `/mcp` needed.
+
+> "Let me test Google real quick..."
+
+Try: "What's on my Google Calendar today?" or any Google Workspace tool.
+
+A browser window will open for them to log in. After they authenticate, the request will complete.
+
+---
+
+### For Slack (uses token directly)
+
+Slack uses the API token they provided - no additional auth needed.
+
+> "Let me test Slack real quick..."
+
+Try: "List my Slack channels" or any Slack tool.
+
+If it works, they're connected. If not, the token might be wrong - ask them to verify it.
+
+---
+
+### Testing Each Integration
+
+**After they confirm each integration:**
+- Ask: "Did it work? Let me test it real quick..."
+- Try a simple test:
+  - **Atlassian:** "What Jira projects do you have access to?"
+  - **MS365:** "What's on your Outlook calendar today?"
+  - **Google:** "What's on my Google Calendar today?"
+  - **Slack:** "List my Slack channels"
+- If it works: "Perfect! {Integration} is connected."
+- If it fails: See troubleshooting below.
+
+---
+
+### Troubleshooting
+
+**Atlassian/MS365 (if `/mcp` auth doesn't work):**
+
+1. "Let's try `/mcp` again - do you see {integration} in the list?"
+   - If NO: The MCP wasn't added. Re-run the `claude mcp add` command, then restart again.
+   - If YES but not authenticated: Select it and try 'Authenticate' again.
+
+2. "Sometimes the browser auth doesn't complete properly. Try these steps:"
+   - Close any old browser tabs from previous auth attempts
+   - In `/mcp`, select the integration and choose 'Authenticate'
+   - Complete the login in the new browser window
+   - Wait for the success message before coming back
+
+**Google (if browser auth doesn't work):**
+
+1. Check that the OAuth credentials are correct
+2. Make sure the Gmail, Calendar, and Drive APIs are enabled in Google Cloud Console
+3. Try the request again - it should open a new browser window
+
+**Slack (if commands fail):**
+
+1. Verify the token starts with `xoxp-` (not `xoxb-`)
+2. Check that all required scopes were added to the Slack app
+3. Try reinstalling the Slack app to your workspace and getting a fresh token
+
+**If still stuck:** "Let's skip this for now and try again later. Just ask me 'help me connect to {integration}' anytime."
+
+---
+
+### When Done
+
+1. Delete the pending auth file:
+   ```bash
+   rm .onboarding-pending-auth
+   ```
+
+2. Celebrate:
+   > "Awesome! All your integrations are connected. You're all set!"
+
+3. Give them their first briefing:
+   > "Type `/start` and let's get to work!"
 
 ---
 
@@ -64,11 +204,24 @@ This is where we set up the user's personal MARVIN workspace, separate from the 
 Explain:
 > "Now I'm going to create your personal MARVIN workspace. This is where all your data, goals, and session logs will live. The template you downloaded will stay separate so you can get updates later."
 
-Ask: "Where would you like me to put your MARVIN folder? The default is your home folder (`~/marvin`). Press Enter to use the default, or tell me a different location."
+Ask where they'd like their MARVIN folder:
+> "Where would you like your MARVIN folder to live? I'd suggest somewhere easy to find:
+> - **Desktop** - Right there when you need it
+> - **Documents** - Tucked away but organized
+>
+> Just say 'desktop' or 'documents', or tell me a different spot if you have somewhere in mind."
+
+**After they respond, explain what's about to happen:**
+> "Great! I'm going to run a few quick setup commands to create your workspace. You'll see some permission prompts pop up - just click **Accept** for each one. This is totally normal - I'm just:
+> - Creating your MARVIN folder
+> - Copying over the necessary files (commands, skills, etc.)
+> - Setting up your personal state files
+>
+> This will only take a moment."
 
 **Create the workspace:**
 
-Run these commands (using their chosen path, defaulting to ~/marvin):
+Run these commands (using their chosen path - `~/Desktop/marvin` or `~/Documents/marvin`):
 
 ```bash
 # Create the workspace directory
@@ -197,50 +350,40 @@ Last updated: {TODAY'S DATE}
 
 Ask: "Would you like to be able to start me by just typing `marvin` anywhere in the terminal? It's a quick shortcut that makes it easier to open me up."
 
-If yes:
-> "Great! I'll set that up for you. Just run this command - you can copy and paste it:"
->
-> `./.marvin/setup.sh`
->
-> "It'll ask you a couple quick questions, then you're all set. After that, whenever you want to talk to me, just open a new window and type `marvin`."
+If yes, **set it up directly** (don't ask them to run a script):
 
-**Important:** The setup.sh script needs to know about the new workspace location. It should update the shell alias to point to `~/marvin` (or wherever they chose), not the template directory.
+1. Detect their shell: `echo $SHELL`
+2. Determine config file: `.zshrc` for zsh, `.bashrc` for bash, `.profile` otherwise
+3. Check if `marvin()` function already exists in that file
+4. If not, append this function:
 
-If they seem confused or hesitant:
-> "No worries, we can skip this for now! You can always set it up later. For now, you'll navigate to your MARVIN folder and start Claude Code from there."
+```bash
+# MARVIN - AI Chief of Staff
+marvin() {
+    echo -e '\e[1;33m███╗   ███╗    █████╗    ██████╗   ██╗   ██╗  ██╗   ███╗   ██╗   \e[0m'
+    echo -e '\e[1;33m████╗ ████║   ██╔══██╗   ██╔══██╗  ██║   ██║  ██║   ████╗  ██║   \e[0m'
+    echo -e '\e[1;33m██╔████╔██║   ███████║   ██████╔╝  ██║   ██║  ██║   ██╔██╗ ██║   \e[0m'
+    echo -e '\e[1;33m██║╚██╔╝██║   ██╔══██║   ██╔══██╗  ╚██╗ ██╔╝  ██║   ██║╚██╗██║   \e[0m'
+    echo -e '\e[1;33m██║ ╚═╝ ██║██╗██║  ██║██╗██║  ██║██╗╚████╔╝██╗██║██╗██║ ╚████║██╗\e[0m'
+    echo -e '\e[1;33m╚═╝     ╚═╝╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝ ╚═══╝ ╚═╝╚═╝╚═╝╚═╝  ╚═══╝╚═╝\e[0m'
+    echo ''
+    cd "{WORKSPACE_PATH}" && claude
+}
+```
 
-### Step 7: Connect Your Tools (Optional)
+Replace `{WORKSPACE_PATH}` with their actual workspace path (e.g., `~/marvin`).
 
-Ask: "Do you use Google Calendar, Gmail, Jira, or Confluence? I can connect to those so I can check your calendar, help with emails, or look up tickets for you."
+5. Tell them: "Done! After we finish here, open a new terminal and you can start me anytime by typing `marvin`."
 
-If yes, ask which ones they use and guide them:
+If they skip: "No worries! You can always navigate to your MARVIN folder and run `claude` to start me."
 
-**For Google (Calendar, Gmail, Drive):**
-> "Let's connect Google. Run this command from the template folder:"
->
-> `./.marvin/integrations/google-workspace/setup.sh`
->
-> "It'll open a browser window where you log into Google and give me permission to help you."
-
-**For Jira/Confluence:**
-> "Let's connect Atlassian. Run this command from the template folder:"
->
-> `./.marvin/integrations/atlassian/setup.sh`
->
-> "Same thing - it'll open a browser for you to log in."
-
-If they say no or want to skip:
-> "No problem! We can always add these later. Just ask me anytime - 'Hey MARVIN, help me connect to Google Calendar' - and I'll walk you through it."
-
-**Note:** Integrations are run from the template directory, not the user's workspace. The MCP servers are configured globally for Claude Code.
-
-### Step 8: Explain the Daily Workflow
+### Step 7: Explain the Daily Workflow
 
 Explain how a typical day with MARVIN works:
 
 > "Here's how we'll work together each day:"
 >
-> **Start your day:** Type `/marvin` and I'll give you a briefing - your priorities, what's on deck, and anything you need to know.
+> **Start your day:** Type `/start` and I'll give you a briefing - your priorities, what's on deck, and anything you need to know.
 >
 > **Work through your day:** Just talk to me naturally. Tell me what you're working on, ask questions, have me help with tasks.
 >
@@ -248,13 +391,13 @@ Explain how a typical day with MARVIN works:
 >
 > **End your day:** Type `/end` when you're done. I'll summarize everything we covered and save it so I remember next time.
 >
-> "Think of `/marvin` and `/end` as bookends for your work session. Everything in between is just conversation."
+> "Think of `/start` and `/end` as bookends for your work session. Everything in between is just conversation."
 
 Then show the full command list:
 
 | Command | What It Does |
 |---------|--------------|
-| `/marvin` | Start your day with a briefing |
+| `/start` | Start your day with a briefing |
 | `/end` | End your session and save everything |
 | `/update` | Save progress mid-session (without ending) |
 | `/report` | Generate a weekly summary of your work |
@@ -262,7 +405,7 @@ Then show the full command list:
 | `/code` | Open this folder in your IDE |
 | `/help` | See all commands and integrations |
 
-### Step 9: Explain How I Work
+### Step 8: Explain How I Work
 
 This is important - set expectations about MARVIN's personality:
 
@@ -274,13 +417,173 @@ This is important - set expectations about MARVIN's personality:
 >
 > Think of me as a thought partner, not a yes-man. If you want me to just execute without questioning, just say so - but by default, I'll help you think things through."
 
-### Step 10: First Session
+### Step 9: Connect Your Tools (Optional)
 
-Tell them about the template:
-> "One last thing: **Keep the template folder you downloaded.** That's where I get updates from. When new features or integrations are added, you can run `/sync` to pull them into your workspace. Don't worry - your personal data is safe in your MARVIN folder and won't be overwritten."
+Tell them about the template first:
+> "One more thing before we wrap up: **Keep the template folder you downloaded.** That's where I get updates from. When new features or integrations are added, you can run `/sync` to pull them into your workspace. Don't worry - your personal data is safe in your MARVIN folder and won't be overwritten."
 
-Then:
-> "Ready to try it out? Navigate to your MARVIN folder (`cd ~/marvin`) and start Claude Code. Then type `/marvin` and I'll give you your first briefing!"
+Then ask about integrations:
+> "I can connect to several tools to help you out. Which of these do you use?"
+>
+> - **Jira/Confluence** - Track tickets, search documentation
+> - **Microsoft 365** - Outlook email, calendar, OneDrive, Teams
+> - **Google Workspace** - Gmail, Google Calendar, Google Drive
+> - **Slack** - Search messages, send updates
+>
+> "Just tell me which ones you'd like to connect, or say 'none' to skip for now."
+
+**If they say no or skip:**
+
+> "No problem! We can always add these later. Just ask me anytime - 'Hey MARVIN, help me connect to Jira' - and I'll walk you through it."
+
+Move directly to Step 10.
+
+**If they say yes**, collect preferences for each integration they want:
+
+---
+
+#### Collecting Integration Preferences
+
+**For Jira/Confluence (Atlassian):** *(Easy - just needs login)*
+- Ask: "Should Jira be available in all your projects, or just this one?" (all = user scope, this one = project scope)
+
+**For Microsoft 365:** *(Easy - just needs login)*
+- Ask: "Is this a work/school account or personal (outlook.com)?" (work = `--org-mode`)
+- Ask: "All MS365 tools or just essentials (mail, calendar, files)?" (essentials = `--preset mail,calendar,files`)
+- Ask: "Available in all projects or just this one?" (all = user scope)
+
+**For Google Workspace:** *(Needs OAuth credentials)*
+> "Google needs OAuth credentials to connect. Do you already have a Google Cloud project with OAuth set up?"
+
+- **If yes:** Ask for their Client ID and Client Secret
+- **If no:**
+  > "No worries! Setting up Google OAuth takes about 5 minutes. Here's what you'll need to do:
+  >
+  > 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+  > 2. Create a project (or use an existing one)
+  > 3. Enable the Gmail, Calendar, and Drive APIs
+  > 4. Create OAuth credentials (Desktop app type)
+  > 5. Copy the Client ID and Client Secret
+  >
+  > Want me to walk you through it now, or should we skip Google for now and add it later?"
+
+  If they want to do it now, guide them step by step. If not, skip Google.
+
+**For Slack:** *(Needs API token)*
+> "Slack needs an API token to connect. Do you already have a Slack app with a User Token?"
+
+- **If yes:** Ask for their token (starts with `xoxp-`)
+- **If no:**
+  > "No problem! Creating a Slack app takes about 5 minutes. Here's what you'll need:
+  >
+  > 1. Go to [Slack API](https://api.slack.com/apps)
+  > 2. Create a new app for your workspace
+  > 3. Add the permissions (I'll tell you which ones)
+  > 4. Install it and copy the User OAuth Token
+  >
+  > Want me to walk you through it now, or should we skip Slack for now?"
+
+  If they want to do it now, guide them through creating the Slack app and getting the token. If not, skip Slack.
+
+---
+
+#### Adding the Integrations
+
+Once you've collected their preferences, run the appropriate `claude mcp add` commands:
+
+**Atlassian (Jira/Confluence):**
+```bash
+claude mcp remove atlassian 2>/dev/null || true
+claude mcp add atlassian -s user --transport http https://mcp.atlassian.com/v1/mcp
+# Remove "-s user" for project scope
+```
+
+**Microsoft 365:**
+```bash
+claude mcp remove ms365 2>/dev/null || true
+claude mcp add ms365 -s user -- npx -y @softeria/ms-365-mcp-server --org-mode
+# Remove "-s user" for project scope
+# Remove "--org-mode" for personal accounts
+# Add "--preset mail,calendar,files" for essentials only
+```
+
+**Google Workspace:** *(Only if they provided credentials)*
+```bash
+claude mcp remove google-workspace 2>/dev/null || true
+claude mcp add google-workspace -s user \
+    --env GOOGLE_OAUTH_CLIENT_ID="{their_client_id}" \
+    --env GOOGLE_OAUTH_CLIENT_SECRET="{their_client_secret}" \
+    -- uvx workspace-mcp --tools gmail drive calendar docs sheets slides
+```
+
+**Slack:** *(Only if they provided a token)*
+```bash
+claude mcp remove slack 2>/dev/null || true
+claude mcp add slack -s user \
+    -e SLACK_MCP_XOXP_TOKEN="{their_token}" \
+    -- npx -y slack-mcp-server@latest --transport stdio
+```
+
+---
+
+#### Creating the Pending Auth File
+
+After adding integrations, create a file to track what needs `/mcp` authentication:
+
+```bash
+# In the user's workspace (e.g., ~/marvin)
+cat > .onboarding-pending-auth << 'EOF'
+# Integrations pending authentication
+# MARVIN will read this file on next startup and guide you through auth
+
+atlassian
+ms365
+EOF
+```
+
+**Note:** Only Atlassian and MS365 need `/mcp` authentication after restart. Google and Slack authenticate on first use (Google opens browser, Slack uses the token directly).
+
+Only include integrations that actually need `/mcp` auth.
+
+---
+
+#### Continue to Step 10
+
+After adding integrations (and creating the pending auth file if needed), continue to Step 10.
+
+### Step 10: Wrap Up and Restart
+
+**Tell them we're done and need to restart:**
+
+> "That's everything! Your MARVIN is all set up."
+
+**If they set up integrations:**
+> "I've added your integrations, but I need to restart to see them. Here's what to do:
+>
+> 1. Type `exit` to close me
+> 2. Close this terminal window completely
+> 3. Open a new terminal
+> 4. Type `marvin` to start me up again
+>
+> When you come back, I'll walk you through connecting your accounts - it'll just take a minute. Then type `/start` for your first real briefing!
+>
+> Ready? Type `exit` and I'll see you in a moment!"
+
+**Wait for them to exit.** They will return via the "Resuming After Restart" flow at the top of this document.
+
+**If they skipped integrations:**
+> "To finish up, you'll need to restart your terminal for the `marvin` command to work. Here's what to do:
+>
+> 1. Type `exit` to close me
+> 2. Close this terminal window completely
+> 3. Open a new terminal
+> 4. Type `marvin` to start me up again
+> 5. Type `/start` for your first briefing!
+>
+> Ready? Type `exit` and I'll see you soon!"
+
+**After they run `/start` (either path):**
+Delete the `.onboarding-pending-auth` file if it exists, then give them their first briefing using the normal `/start` flow.
 
 ---
 
@@ -288,7 +591,7 @@ Then:
 
 Once setup is complete, MARVIN should:
 1. Never show this onboarding flow again
-2. Use the normal `/marvin` briefing flow
+2. Use the normal `/start` briefing flow
 3. Reference CLAUDE.md for the user's profile and preferences
 4. Run from the user's workspace directory (e.g., ~/marvin), not the template
 

@@ -26,7 +26,7 @@ print_header() {
 
 # Get the template directory (parent of .marvin where this script lives)
 TEMPLATE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-DEFAULT_WORKSPACE="$HOME/marvin"
+DEFAULT_WORKSPACE="$HOME/start"
 
 print_header "MARVIN Migration"
 
@@ -199,7 +199,7 @@ echo "  - Any custom skills you created"
 echo ""
 print_color "$CYAN" "Next steps:"
 echo "  1. Open your new workspace: cd $WORKSPACE_DIR && claude"
-echo "  2. Start a session: /marvin"
+echo "  2. Start a session: /start"
 echo ""
 print_color "$YELLOW" "Important:"
 echo "  - Keep the template folder ($TEMPLATE_DIR) for updates"
