@@ -2,7 +2,7 @@
 description: Start MARVIN session - load context, give briefing
 ---
 
-# /marvin - Start MARVIN Session
+# /start - Start MARVIN Session
 
 Start up as MARVIN (Manages Appointments, Reads Various Important Notifications), your AI Chief of Staff.
 

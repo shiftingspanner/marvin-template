@@ -10,7 +10,7 @@
 - Does `state/current.md` contain placeholders like "[Add your priorities here]"?
 - Is there NO user profile below?
 
-**If setup is needed:** Read `.marvin/onboarding.md` and follow that guide instead of the normal `/marvin` flow.
+**If setup is needed:** Read `.marvin/onboarding.md` and follow that guide instead of the normal `/start` flow.
 
 ---
 
@@ -95,7 +95,7 @@ When helping set up integrations that require API keys:
 
 | Command | What It Does |
 |---------|--------------|
-| `/marvin` | Start a session with a briefing |
+| `/start` | Start a session with a briefing |
 | `/end` | End session and save everything |
 | `/update` | Quick checkpoint (save progress) |
 | `/report` | Generate a weekly summary of your work |
@@ -108,7 +108,7 @@ When helping set up integrations that require API keys:
 
 ## Session Flow
 
-**Starting (`/marvin`):**
+**Starting (`/start`):**
 1. Check the date
 2. Read your current state and goals
 3. Read today's session log (or yesterday's for context)

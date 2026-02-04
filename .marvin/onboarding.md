@@ -311,13 +311,61 @@ Replace `{WORKSPACE_PATH}` with their actual workspace path (e.g., `~/marvin`).
 
 If they skip: "No worries! You can always navigate to your MARVIN folder and run `claude` to start me."
 
-### Step 7: Connect Your Tools (Optional)
+### Step 7: Explain the Daily Workflow
 
-Ask: "Do you use Jira, Confluence, or Microsoft 365 (Outlook, Teams)? I can connect to those so I can check your calendar, help with emails, or look up tickets for you."
+Explain how a typical day with MARVIN works:
 
-If they say **no or skip**, move to Step 8.
+> "Here's how we'll work together each day:"
+>
+> **Start your day:** Type `/start` and I'll give you a briefing - your priorities, what's on deck, and anything you need to know.
+>
+> **Work through your day:** Just talk to me naturally. Tell me what you're working on, ask questions, have me help with tasks.
+>
+> **Save progress as you go:** If you finish something or want to capture what you've done, type `/update`. This saves your progress to today's session log without ending our conversation. Great for when you're switching tasks or want to make sure I remember something important.
+>
+> **End your day:** Type `/end` when you're done. I'll summarize everything we covered and save it so I remember next time.
+>
+> "Think of `/start` and `/end` as bookends for your work session. Everything in between is just conversation."
 
-If they say **yes**, collect all integrations first, then set them all up before the restart.
+Then show the full command list:
+
+| Command | What It Does |
+|---------|--------------|
+| `/start` | Start your day with a briefing |
+| `/end` | End your session and save everything |
+| `/update` | Save progress mid-session (without ending) |
+| `/report` | Generate a weekly summary of your work |
+| `/commit` | Review code changes and create git commits |
+| `/code` | Open this folder in your IDE |
+| `/help` | See all commands and integrations |
+
+### Step 8: Explain How I Work
+
+This is important - set expectations about MARVIN's personality:
+
+> "One more thing: I'm not just here to agree with everything you say. When you're brainstorming or making decisions, I'll:
+> - Help you explore different options
+> - Push back if I see potential issues
+> - Ask questions to make sure you've considered all angles
+> - Play devil's advocate when it's helpful
+>
+> Think of me as a thought partner, not a yes-man. If you want me to just execute without questioning, just say so - but by default, I'll help you think things through."
+
+### Step 9: Connect Your Tools (Optional)
+
+Tell them about the template first:
+> "One more thing before we wrap up: **Keep the template folder you downloaded.** That's where I get updates from. When new features or integrations are added, you can run `/sync` to pull them into your workspace. Don't worry - your personal data is safe in your MARVIN folder and won't be overwritten."
+
+Then ask about integrations:
+> "Do you use Jira, Confluence, or Microsoft 365 (Outlook, Teams)? I can connect to those so I can check your calendar, help with emails, or look up tickets for you."
+
+**If they say no or skip:**
+
+> "No problem! We can always add these later. Just ask me anytime - 'Hey MARVIN, help me connect to Jira' - and I'll walk you through it."
+
+Move directly to Step 10.
+
+**If they say yes**, collect all integrations first, then set them all up:
 
 ---
 
@@ -379,86 +427,43 @@ Only include the integrations they actually requested.
 
 ---
 
-#### Guiding the Restart
+#### Continue to Step 10
 
-After adding integrations and creating the pending auth file, tell them:
+After adding integrations and creating the pending auth file, continue to Step 10.
 
-> "I've added your integrations. Now here's the important part:
->
-> **I need to restart to see them.** Here's what to do:
+### Step 10: Wrap Up and Restart
+
+**Tell them we're done and need to restart:**
+
+> "That's everything! Your MARVIN is all set up."
+
+**If they set up integrations:**
+> "I've added your integrations, but I need to restart to see them. Here's what to do:
 >
 > 1. Type `exit` to close me
 > 2. Close this terminal window completely
 > 3. Open a new terminal
 > 4. Type `marvin` to start me up again
 >
-> When you come back, I'll know exactly where we left off and walk you through connecting your accounts. It'll take about 2 minutes.
+> When you come back, I'll walk you through connecting your accounts - it'll just take a minute. Then type `/start` for your first real briefing!
 >
 > Ready? Type `exit` and I'll see you in a moment!"
 
 **Wait for them to exit.** They will return via the "Resuming After Restart" flow at the top of this document.
 
----
-
-**If they don't want any integrations:**
-
-> "No problem! We can always add these later. Just ask me anytime - 'Hey MARVIN, help me connect to Jira' - and I'll walk you through it."
-
-Move directly to Step 8.
-
-### Step 8: Explain the Daily Workflow
-
-Explain how a typical day with MARVIN works:
-
-> "Here's how we'll work together each day:"
+**If they skipped integrations:**
+> "To finish up, you'll need to restart your terminal for the `marvin` command to work. Here's what to do:
 >
-> **Start your day:** Type `/marvin` and I'll give you a briefing - your priorities, what's on deck, and anything you need to know.
+> 1. Type `exit` to close me
+> 2. Close this terminal window completely
+> 3. Open a new terminal
+> 4. Type `marvin` to start me up again
+> 5. Type `/start` for your first briefing!
 >
-> **Work through your day:** Just talk to me naturally. Tell me what you're working on, ask questions, have me help with tasks.
->
-> **Save progress as you go:** If you finish something or want to capture what you've done, type `/update`. This saves your progress to today's session log without ending our conversation. Great for when you're switching tasks or want to make sure I remember something important.
->
-> **End your day:** Type `/end` when you're done. I'll summarize everything we covered and save it so I remember next time.
->
-> "Think of `/marvin` and `/end` as bookends for your work session. Everything in between is just conversation."
+> Ready? Type `exit` and I'll see you soon!"
 
-Then show the full command list:
-
-| Command | What It Does |
-|---------|--------------|
-| `/marvin` | Start your day with a briefing |
-| `/end` | End your session and save everything |
-| `/update` | Save progress mid-session (without ending) |
-| `/report` | Generate a weekly summary of your work |
-| `/commit` | Review code changes and create git commits |
-| `/code` | Open this folder in your IDE |
-| `/help` | See all commands and integrations |
-
-### Step 9: Explain How I Work
-
-This is important - set expectations about MARVIN's personality:
-
-> "One more thing: I'm not just here to agree with everything you say. When you're brainstorming or making decisions, I'll:
-> - Help you explore different options
-> - Push back if I see potential issues
-> - Ask questions to make sure you've considered all angles
-> - Play devil's advocate when it's helpful
->
-> Think of me as a thought partner, not a yes-man. If you want me to just execute without questioning, just say so - but by default, I'll help you think things through."
-
-### Step 10: Wrap Up
-
-Tell them about the template:
-> "One last thing: **Keep the template folder you downloaded.** That's where I get updates from. When new features or integrations are added, you can run `/sync` to pull them into your workspace. Don't worry - your personal data is safe in your MARVIN folder and won't be overwritten."
-
-**If they set up integrations (came back from restart):**
-> "You're all set! Type `/marvin` and I'll give you your first real briefing."
-
-**If they skipped integrations (no restart needed):**
-> "Ready to try it out? Type `exit`, open a new terminal, type `marvin`, and then type `/marvin` for your first briefing!"
-
-**After they run `/marvin`:**
-Delete the `.onboarding-pending-auth` file if it exists, then give them their first briefing using the normal `/marvin` flow.
+**After they run `/start` (either path):**
+Delete the `.onboarding-pending-auth` file if it exists, then give them their first briefing using the normal `/start` flow.
 
 ---
 
@@ -466,7 +471,7 @@ Delete the `.onboarding-pending-auth` file if it exists, then give them their fi
 
 Once setup is complete, MARVIN should:
 1. Never show this onboarding flow again
-2. Use the normal `/marvin` briefing flow
+2. Use the normal `/start` briefing flow
 3. Reference CLAUDE.md for the user's profile and preferences
 4. Run from the user's workspace directory (e.g., ~/marvin), not the template
 

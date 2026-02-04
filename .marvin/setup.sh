@@ -35,7 +35,7 @@ command_exists() {
 TEMPLATE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 # Default workspace location
-DEFAULT_WORKSPACE="$HOME/marvin"
+DEFAULT_WORKSPACE="$HOME/start"
 
 print_header "MARVIN Setup"
 echo "Welcome! Let's set up your personal AI Chief of Staff."
@@ -313,7 +313,7 @@ marvin/
 
 ### Session Continuity
 
-**On startup (\`/marvin\`):**
+**On startup (\`/start\`):**
 1. Get current date: \`date +%Y-%m-%d\`
 2. Read \`CLAUDE.md\`, \`state/current.md\`, \`state/goals.md\`
 3. Read today's session log if it exists (resume context)
@@ -333,7 +333,7 @@ marvin/
 
 | Command | Description |
 |---------|-------------|
-| \`/marvin\` | Start session with briefing |
+| \`/start\` | Start session with briefing |
 | \`/update\` | Quick checkpoint |
 | \`/end\` | End session, save context |
 | \`/commit\` | Review changes and create git commits |
@@ -527,7 +527,7 @@ if [[ -n "$IDE_CMD" ]]; then
     print_color "$CYAN" "  mcode     - Open MARVIN in $IDE_CMD"
 fi
 echo ""
-echo "Once Claude Code starts, type /marvin to begin your first session."
+echo "Once Claude Code starts, type /start to begin your first session."
 echo ""
 print_color "$YELLOW" "Important: Keep the template folder ($TEMPLATE_DIR)!"
 print_color "$YELLOW" "That's where you'll get updates. Run /sync to pull new features."

@@ -12,7 +12,7 @@ Click the green "Code" button above, then "Download ZIP". Unzip it somewhere on 
 
 Or if you use git:
 ```
-git clone https://github.com/SterlingChin/marvin-template.git marvin-template
+git clone https://github.com/SterlingChin/start-template.git marvin-template
 ```
 
 ### 2. Open in Claude Code
@@ -50,7 +50,7 @@ MARVIN creates a **personal workspace** separate from this template:
 ├── sessions/               # Your daily session logs
 └── ...
 
-~/Downloads/marvin-template/ <- Template (keep this for updates!)
+~/Downloads/start-template/ <- Template (keep this for updates!)
 ├── .marvin/                # Setup scripts and integrations
 └── ...
 ```
@@ -76,7 +76,7 @@ marvin
 
 ### Start Your Day
 ```
-/marvin
+/start
 ```
 MARVIN gives you a briefing: your priorities, deadlines, and progress.
 
@@ -105,7 +105,7 @@ MARVIN saves everything for next time.
 
 | Command | What It Does |
 |---------|--------------|
-| `/marvin` | Start your day with a briefing |
+| `/start` | Start your day with a briefing |
 | `/end` | End session and save everything |
 | `/update` | Quick checkpoint (save progress) |
 | `/report` | Generate a weekly summary |
@@ -135,7 +135,7 @@ If you were using MARVIN before the workspace separation update, run the migrati
 ### 1. Get the Latest Template
 
 ```
-git clone https://github.com/SterlingChin/marvin-template.git marvin-template
+git clone https://github.com/SterlingChin/start-template.git marvin-template
 ```
 
 Or if you already have it cloned, run `git pull` to get the latest.
